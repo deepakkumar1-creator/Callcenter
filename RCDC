@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Call Center Record Entry</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                },
+                colors: {
+                    'google-blue': '#4285F4',
+                    'google-green': '#34A853',
+                    'google-red': '#EA4335',
+                    'google-yellow': '#FBBC05',
+                }
+            }
+        }
+    }
+</script>
+<style>
+    body {
+        /* Updated background to a subtle linear gradient */
+        background: linear-gradient(to bottom right, #e3f2fd, #ffffff); /* Light blue to white gradient */
+        font-family: 'Inter', sans-serif;
+    }
+    /* Custom styling to mimic Google Form's input focus effect more closely */
+    .form-input-field:focus {
+        border-color: transparent;
+        box-shadow: none;
+        outline: none;
+        border-bottom: 2px solid theme('colors.google-blue');
+    }
+    .form-select-field:focus {
+        border-color: theme('colors.google-blue');
+        box-shadow: none;
+        outline: none;
+    }
+    .form-textarea-field:focus {
+        border-color: theme('colors.google-blue');
+        box-shadow: none;
+        outline: none;
+    }
+
+    /* Specific styles for red background when not resolved/closed */
+    .resolved-datetime-unapplicable {
+        background-color: #ffe5e5; /* Light red background */
+        border-color: #ff7777; /* Red border */
+    }
+</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-3xl w-full bg-white rounded-lg shadow-md p-8 sm:p-10">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Call Center Record Entry</h1>
+        <form id="callEntryForm" class="space-y-6">
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="srNo" class="block text-sm font-medium text-gray-700 mb-1">Sr No:</label>
+                    <input type="number" id="srNo" name="srNo" required
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+                <div class="form-group">
+                    <label for="callReceivedFrom" class="block text-sm font-medium text-gray-700 mb-1">Call Received From:</label>
+                    <select id="callReceivedFrom" name="callReceivedFrom" required
+                            class="form-select-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200">
+                        <option value="">--Select--</option>
+                        </select>
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description:</label>
+                    <select id="description" name="description" required
+                            class="form-select-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200">
+                        <option value="">--Select--</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="package" class="block text-sm font-medium text-gray-700 mb-1">Package:</label>
+                    <input type="text" id="package" name="package" readonly
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 bg-gray-100 cursor-not-allowed focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="logDateTime" class="block text-sm font-medium text-gray-700 mb-1">Log Date & Time:</label>
+                    <input type="datetime-local" id="logDateTime" name="logDateTime" required
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+                <div class="form-group">
+                    <label for="meterNo" class="block text-sm font-medium text-gray-700 mb-1">Meter No:</label>
+                    <input type="text" id="meterNo" name="meterNo"
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200"
+                           maxlength="7" pattern="\d{7}">
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="consumerNo" class="block text-sm font-medium text-gray-700 mb-1">Consumer No:</label>
+                    <input type="text" id="consumerNo" name="consumerNo" required
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200"
+                           maxlength="12" pattern="\d{11,12}">
+                </div>
+                <div class="form-group">
+                    <label for="circle" class="block text-sm font-medium text-gray-700 mb-1">Circle:</label>
+                    <input type="text" id="circle" name="circle" readonly
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 bg-gray-100 cursor-not-allowed focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="subdivision" class="block text-sm font-medium text-gray-700 mb-1">Subdivision:</label>
+                    <input type="text" id="subdivision" name="subdivision" readonly
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 bg-gray-100 cursor-not-allowed focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+                <div class="form-group">
+                    <label for="consumerName" class="block text-sm font-medium text-gray-700 mb-1">Consumer Name:</label>
+                    <input type="text" id="consumerName" name="consumerName"
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="contactDetails" class="block text-sm font-medium text-gray-700 mb-1">Contact Details:</label>
+                    <input type="text" id="contactDetails" name="contactDetails"
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+                <div class="form-group">
+                    <label for="finalRemarks" class="block text-sm font-medium text-gray-700 mb-1">Final Remarks:</label>
+                    <select id="finalRemarks" name="finalRemarks"
+                            class="form-select-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200">
+                        <option value="">--Select--</option>
+                        </select>
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="onDemandRCRemarks" class="block text-sm font-medium text-gray-700 mb-1">On-Demand RC Remarks:</label>
+                    <select id="onDemandRCRemarks" name="onDemandRCRemarks"
+                            class="form-select-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200">
+                        <option value="">--Select--</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="fieldRemarks" class="block text-sm font-medium text-gray-700 mb-1">Field Remarks:</label>
+                    <textarea id="fieldRemarks" name="fieldRemarks" rows="2"
+                              class="form-textarea-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200"></textarea>
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+                    <select id="status" name="status" required
+                            class="form-select-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200">
+                        <option value="">--Select--</option>
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="callResolvedDateTime" class="block text-sm font-medium text-gray-700 mb-1">Call Resolved Date & Time:</label>
+                    <input type="datetime-local" id="callResolvedDateTime" name="callResolvedDateTime"
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="executiveName" class="block text-sm font-medium text-gray-700 mb-1">Executive Name:</label>
+                    <input type="text" id="executiveName" name="executiveName"
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+                <div class="form-group">
+                    <label for="otherRemarks" class="block text-sm font-medium text-gray-700 mb-1">Other Remark(s):</label>
+                    <textarea id="otherRemarks" name="otherRemarks" rows="2"
+                              class="form-textarea-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200"></textarea>
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="rssiCode" class="block text-sm font-medium text-gray-700 mb-1">RSSI Code:</label>
+                    <select id="rssiCode" name="rssiCode"
+                            class="form-select-field w-full px-3 py-2 border border-gray-300 rounded-md focus:border-google-blue focus:ring-0 transition-all duration-200">
+                        <option value="">--Select--</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="errorCode" class="block text-sm font-medium text-gray-700 mb-1">Error Code:</label>
+                    <input type="text" id="errorCode" name="errorCode"
+                           class="form-input-field w-full px-3 py-2 border-b border-gray-300 focus:border-b-2 focus:border-google-blue focus:ring-0 transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 justify-start mt-8">
+                <button type="submit"
+                        class="px-6 py-2 bg-google-blue text-white font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-google-blue transition-colors duration-200">
+                    Add Entry
+                </button>
+            </div>
+        </form>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6 text-center">Current Entries</h2>
+        <div class="overflow-x-auto">
+            <table id="entryTable" class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Sr No</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Call Received From</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Description</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Package</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Log Date & Time</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Meter No</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Consumer No</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Circle</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Subdivision</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Consumer Name</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Contact Details</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Final Remarks</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">On-Demand RC Remarks</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Field Remarks</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Status</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Call Resolved Date & Time</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Executive Name</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Other Remark(s)</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">RSSI Code</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Error Code</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-gray-200">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let entries = [];
+        let scriptURL = "https://script.google.com/macros/s/AKfycbzC4GKbBwR_D0aoqeglZNQrjNeDuyfIkMxp-yYr7ocVUJ62YYlkWVL3UK5rqfpG0GqnRA/exec"; // ⚠️ Replace with your script's URL
+
+        const callReceivedFromOptions = ["1912", "Hiprint / Genus group", "RCDC Field", "Medows Job", "Direct from Consumer", "Direct from Sub-Div", "Direct from Genus Field", "Direct from Genus Senior"];
+        const descriptionOptions = ["Balance available but no Power", "Recharge successful but RC not found", "Bill and RCDC paid but No power", "RC request", "DC Status", "RC status", "Incident Raised", "Others", "Meter Issue", "RC request based on incident", "Daily DC triggred", "RC not triggred due to bill desk issue"];
+        const finalRemarksOptions = ["Already Connected", "Connected - OD", "ODRC Pending", "Job update-reinitiate", "FV arranged - Connectd", "FV arranged - Pending", "Power Outage", "Balance Negative in ARMS - RC rejected", "Balance Negative MDM- RC done", "Balance Negative in ARMS - RC done", "Balance Negative MDM- RC rejected", "Low Voltage -RC pending", "Low Voltage -FV arranged", "Wrong tagging - Connected", "Wrong tagging - FV arranged - Connected", "Wrong tagging - FV arranged - Pending", "Wrong tagging - FV arranged - Others", "Meter issue - FV arranged", "Auto RC pending since > 1 hours", "L2 Support requested", "Line man requested"];
+        const onDemandRCRemarksOptions = ["RC request not found", "DC & RC both request not found", "DC completed after RC Completion", "Balance mismatch", "Wrong Tagging", "Not updated in ARMS", "Ownership Changed", "JJM Consumer", "Govt . Consumer", "Balance negative (Incident raised )", "Resolved", "Pending", "Subdivision Migrated (Incident raised)"];
+        const rssiCodeOptions = Array.from({ length: 36 }, (_, i) => i.toString().padStart(2, '0'));
+
+        const ssCdToPackageMap = {};
+        const ssCdToCircleMap = {};
+        const ssCdToSubdivisionMap = {};
+        const packageMappingCSV = `PKG-2,SUB-Div-16,SS CD
+BADARPUR,Hailakandi,132
+,Lala,134
+,R.K. Nagar,135
+,Badarpur,138
+,Durlavcherra,139
+,Karimganj,140
+,Lowairpoa,141
+,Nilambazar,142
+,Patherkandi,143
+CACHAR,Lakhipur,146
+,Silchar-I,147
+,Silchar-II,148
+,Sonai,149
+,Udharbond,150
+,Silchar-III,151
+,Kalain,133
+,,
+PKG-3,SUB-Div-15,SS CD
+NAGAON,Hojai,119
+,Kathiatoli,120
+,Lanka,121
+,Nagaon-1,122
+,Nagaon-2,123
+,Nagaon-3,124
+,Dhing,126
+,Kaliabor,127
+,Samaguri,129
+,Raha,130
+GOLAGHAT,Golaghat-1,181
+,Bokakhat,182
+,Kamargaon,183
+,Sarupathar,184
+,Golaghat-2,185
+,,
+PKG-4,SUB-Div-24,SS CD
+JORHAT,Jorhat-1,170
+,Dergaon,172
+,Jorhat-3,173
+,Majuli,174
+,Titabor,175
+,Teok,176
+,Mariani,177
+,Amguri,178
+,Naoboicha,179
+SIBSAGAR,Sibsagar,191
+,Demow,192
+,Nazira,193
+,Sonari,194
+,Moran,195
+,Amguri-2,196
+,Gaurisagar,197
+,Amguri-3,198
+,Simulguri,199
+,,
+PKG-5,SUB-Div-26,SS CD
+DIBRUGARH,Dibrugarh-1,200
+,Dibrugarh-2,201
+,Dibrugarh-3,202
+,Dibrugarh-4,203
+,Barbarua,204
+,Moran,205
+,Naharkatia,206
+,Tingkhong,207
+,Joypur,208
+,Tinsukia,209
+,Doomdooma,210
+,Digboi,211
+,Makum,212
+,Margherita,213
+,Sadiya,214
+,Chabua,215`;
+
+        let currentPackageLabel = '';
+        let lastKnownCircle = '';
+        let lastKnownSubdivision = '';
+
+        packageMappingCSV.split('\n').forEach(line => {
+            const parts = line.split(',');
+            const firstPart = parts[0] ? parts[0].trim() : '';
+            const secondPart = parts[1] ? parts[1].trim() : '';
+            const ssCd = parts[2] ? parts[2].trim() : '';
+
+            if (firstPart.startsWith('PKG-')) {
+                currentPackageLabel = firstPart;
+                lastKnownCircle = '';
+                lastKnownSubdivision = '';
+            } else if (ssCd.match(/^\d{3}$/)) {
+                if (firstPart !== '') {
+                    lastKnownCircle = firstPart;
+                }
+                if (secondPart !== '') {
+                    lastKnownSubdivision = secondPart;
+                }
+                ssCdToPackageMap[ssCd] = currentPackageLabel;
+                ssCdToCircleMap[ssCd] = lastKnownCircle;
+                ssCdToSubdivisionMap[ssCd] = lastKnownSubdivision;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('callEntryForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addEntry();
+                sendToGoogleSheets();
+            });
+
+            const populateDropdown = (selectId, options) => {
+                const selectElement = document.getElementById(selectId);
+                options.forEach(optionText => {
+                    const option = document.createElement('option');
+                    option.value = optionText;
+                    option.textContent = optionText;
+                    selectElement.appendChild(option);
+                });
+            };
+
+            populateDropdown('callReceivedFrom', callReceivedFromOptions);
+            populateDropdown('description', descriptionOptions);
+            populateDropdown('finalRemarks', finalRemarksOptions);
+            populateDropdown('onDemandRCRemarks', onDemandRCRemarksOptions);
+            populateDropdown('rssiCode', rssiCodeOptions);
+
+            const logDateTimeInput = document.getElementById('logDateTime');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            logDateTimeInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            document.getElementById('consumerNo').addEventListener('input', autoFillDetails);
+            document.getElementById('finalRemarks').addEventListener('change', toggleFieldRemarksMandatory);
+            document.getElementById('status').addEventListener('change', updateResolvedDateTimeState);
+            
+            toggleFieldRemarksMandatory();
+            updateResolvedDateTimeState();
+        });
+
+        function showCustomMessage(message, isError = false) {
+            const messageBox = document.createElement('div');
+            messageBox.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background-color: ${isError ? '#ffe5e5' : '#fff'};
+                border: 1px solid ${isError ? '#ff7777' : '#ccc'};
+                padding: 20px; border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000;
+                font-family: 'Inter', sans-serif; text-align: center;
+                color: ${isError ? '#cc0000' : '#333'}; font-size: 16px;
+            `;
+            messageBox.innerHTML = `
+                <p>${message}</p>
+                <button onclick="this.parentNode.remove()"
+                    class="mt-4 px-4 py-2 bg-google-blue text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+                    OK
+                </button>
+            `;
+            document.body.appendChild(messageBox);
+        }
+
+        function autoFillDetails() {
+            const consumerNoInput = document.getElementById('consumerNo');
+            const packageInput = document.getElementById('package');
+            const circleInput = document.getElementById('circle');
+            const subdivisionInput = document.getElementById('subdivision');
+            const consumerNoValue = consumerNoInput.value.trim();
+            if (consumerNoValue.length >= 3) {
+                const firstThreeDigits = consumerNoValue.substring(0, 3);
+                packageInput.value = ssCdToPackageMap[firstThreeDigits] || '';
+                circleInput.value = ssCdToCircleMap[firstThreeDigits] || '';
+                subdivisionInput.value = ssCdToSubdivisionMap[firstThreeDigits] || '';
+            } else {
+                packageInput.value = '';
+                circleInput.value = '';
+                subdivisionInput.value = '';
+            }
+        }
+
+        function toggleFieldRemarksMandatory() {
+            const finalRemarksSelect = document.getElementById('finalRemarks');
+            const fieldRemarksTextarea = document.getElementById('fieldRemarks');
+            if (finalRemarksSelect.value.includes('FV arranged')) {
+                fieldRemarksTextarea.setAttribute('required', 'true');
+            } else {
+                fieldRemarksTextarea.removeAttribute('required');
+            }
+        }
+
+        function updateResolvedDateTimeState() {
+            const statusSelect = document.getElementById('status');
+            const callResolvedDateTimeInput = document.getElementById('callResolvedDateTime');
+            const now = new Date();
+            const currentDateTimeString = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}T${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            if (statusSelect.value === 'Resolved' || statusSelect.value === 'Closed') {
+                callResolvedDateTimeInput.value = currentDateTimeString;
+                callResolvedDateTimeInput.removeAttribute('readonly');
+                callResolvedDateTimeInput.classList.remove('resolved-datetime-unapplicable');
+            } else {
+                callResolvedDateTimeInput.value = '';
+                callResolvedDateTimeInput.setAttribute('readonly', 'true');
+                callResolvedDateTimeInput.classList.add('resolved-datetime-unapplicable');
+            }
+        }
+
+        function addEntry() {
+            const form = document.getElementById('callEntryForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            const newEntry = {
+                srNo: form.srNo.value,
+                callReceivedFrom: form.callReceivedFrom.value,
+                description: form.description.value,
+                package: form.package.value,
+                logDateTime: form.logDateTime.value,
+                meterNo: form.meterNo.value,
+                consumerNo: form.consumerNo.value,
+                circle: form.circle.value,
+                subdivision: form.subdivision.value,
+                consumerName: form.consumerName.value,
+                contactDetails: form.contactDetails.value,
+                finalRemarks: form.finalRemarks.value,
+                onDemandRCRemarks: form.onDemandRCRemarks.value,
+                fieldRemarks: form.fieldRemarks.value,
+                status: form.status.value,
+                callResolvedDateTime: form.callResolvedDateTime.value,
+                executiveName: form.executiveName.value,
+                otherRemarks: form.otherRemarks.value,
+                rssiCode: form.rssiCode.value,
+                errorCode: form.errorCode.value
+            };
+            entries.push(newEntry);
+            renderTable();
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            entries.forEach(entry => {
+                const row = document.createElement('tr');
+                row.classList.add('hover:bg-gray-50', 'transition-colors', 'duration-100');
+                const rowData = [
+                    entry.srNo, entry.callReceivedFrom, entry.description, entry.package,
+                    entry.logDateTime, entry.meterNo, entry.consumerNo, entry.circle,
+                    entry.subdivision, entry.consumerName, entry.contactDetails,
+                    entry.finalRemarks, entry.onDemandRCRemarks, entry.fieldRemarks,
+                    entry.status, entry.callResolvedDateTime, entry.executiveName,
+                    entry.otherRemarks, entry.rssiCode, entry.errorCode
+                ];
+                rowData.forEach(data => {
+                    const cell = document.createElement('td');
+                    cell.textContent = data;
+                    cell.classList.add('px-4', 'py-2', 'text-sm', 'text-gray-800', 'whitespace-nowrap', 'border-b', 'border-gray-200');
+                    row.appendChild(cell);
+                });
+                tableBody.appendChild(row);
+            });
+        }
+        
+        async function sendToGoogleSheets() {
+            const form = document.getElementById('callEntryForm');
+            if (!form.checkValidity()) {
+                return;
+            }
+            
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showCustomMessage("Entry successfully added to Google Sheets!");
+                    form.reset();
+                    updateResolvedDateTimeState();
+                    toggleFieldRemarksMandatory();
+                    document.getElementById('srNo').focus();
+                } else {
+                    const errorText = await response.text();
+                    showCustomMessage(`Failed to add entry. Server responded with: ${errorText}`, true);
+                }
+            } catch (error) {
+                showCustomMessage(`An error occurred: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>
